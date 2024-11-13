@@ -8,7 +8,7 @@ Google Cloud Platform - (google-compute-service = App Engine &  google-storage-s
 
 ### Set-up and Run
 > now install dependencies and run the project 
-> [Website](https://ikhsan-profile.et.r.appspot.com/)
+> [Website](https://tugas-441611.et.r.appspot.com/)
 
 ```shell
 $ gcloud app deploy
