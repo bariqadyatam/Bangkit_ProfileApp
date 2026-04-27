@@ -1,62 +1,662 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Personal Information</title>
-    <link href="css/bootstap.min.css" rel="stylesheet" />
-    <link href="css/style.css" rel="stylesheet" />
+    <title>Bariq Adyatma — Cloud Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+      /* ── THEME TOKENS ─────────────────────────────────────── */
+      :root {
+        --bg:        #f5f2ee;
+        --bg2:       #eae6e0;
+        --surface:   #ffffff;
+        --border:    #d6d0c8;
+        --text:      #1a1714;
+        --muted:     #6b635a;
+        --accent:    #e85d2f;
+        --accent2:   #2f7ee8;
+        --grad:      linear-gradient(135deg, #e85d2f 0%, #f5a623 100%);
+        --shadow:    0 8px 40px rgba(0,0,0,.08);
+        --radius:    16px;
+        transition: background .3s, color .3s;
+      }
+      [data-theme="dark"] {
+        --bg:       #0f0e0c;
+        --bg2:      #1a1714;
+        --surface:  #232019;
+        --border:   #2e2b26;
+        --text:     #f0ebe4;
+        --muted:    #8a8070;
+        --shadow:   0 8px 40px rgba(0,0,0,.4);
+      }
+
+      /* ── RESET & BASE ─────────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 16px;
+        line-height: 1.7;
+        transition: background .35s, color .35s;
+        overflow-x: hidden;
+      }
+
+      /* ── SCROLL REVEAL ────────────────────────────────────── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+      }
+      .reveal.visible { opacity: 1; transform: translateY(0); }
+      .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+      .reveal-right { opacity: 0; transform: translateX( 40px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+      .reveal-left.visible, .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+      /* stagger children */
+      .stagger > * { opacity: 0; transform: translateY(28px); transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
+      .stagger > *.visible { opacity: 1; transform: translateY(0); }
+
+      /* ── DARK TOGGLE ──────────────────────────────────────── */
+      #toggle-dark {
+        position: fixed;
+        top: 24px; right: 24px;
+        z-index: 1000;
+        width: 52px; height: 28px;
+        background: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: 999px;
+        cursor: pointer;
+        display: flex; align-items: center;
+        padding: 3px;
+        transition: background .35s, border-color .35s;
+        box-shadow: var(--shadow);
+      }
+      #toggle-dark .knob {
+        width: 18px; height: 18px;
+        border-radius: 50%;
+        background: var(--accent);
+        transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 10px;
+      }
+      [data-theme="dark"] #toggle-dark .knob { transform: translateX(24px); }
+      #toggle-dark .knob::before { content: '☀️'; }
+      [data-theme="dark"] #toggle-dark .knob::before { content: '🌙'; }
+
+      /* ── NAVBAR ───────────────────────────────────────────── */
+      nav {
+        position: sticky; top: 0; z-index: 900;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 40px;
+        display: flex; align-items: center; gap: 32px;
+        backdrop-filter: blur(12px);
+        transition: background .35s;
+      }
+      nav a {
+        font-family: 'Syne', sans-serif;
+        font-size: 13px; font-weight: 600;
+        letter-spacing: .08em; text-transform: uppercase;
+        color: var(--muted); text-decoration: none;
+        transition: color .2s;
+      }
+      nav a:hover { color: var(--accent); }
+      nav .brand {
+        margin-right: auto;
+        font-size: 15px; font-weight: 800;
+        color: var(--text);
+      }
+
+      /* ── HERO ─────────────────────────────────────────────── */
+      .hero {
+        min-height: 92vh;
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 0;
+        overflow: hidden;
+        position: relative;
+      }
+      .hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(232,93,47,.08) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .hero-text {
+        padding: 80px 64px 80px 80px;
+        display: flex; flex-direction: column; justify-content: center;
+      }
+      .hero-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: color-mix(in srgb, var(--accent) 10%, transparent);
+        color: var(--accent);
+        border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+        padding: 6px 14px; border-radius: 999px;
+        font-size: 12px; font-weight: 600; letter-spacing: .1em;
+        text-transform: uppercase; margin-bottom: 28px;
+        width: fit-content;
+      }
+      .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+      @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+      .hero h1 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(3rem, 5vw, 5.5rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -.03em;
+        margin-bottom: 20px;
+      }
+      .hero h1 .accent-name { color: var(--accent); }
+
+      .hero .subtitle {
+        font-size: 18px; font-weight: 300;
+        color: var(--muted); max-width: 480px;
+        margin-bottom: 40px;
+      }
+      .hero-cta {
+        display: flex; gap: 14px; flex-wrap: wrap;
+      }
+      .btn-primary-custom {
+        background: var(--accent);
+        color: #fff; padding: 14px 30px;
+        border-radius: 999px; font-weight: 600;
+        text-decoration: none; font-size: 15px;
+        transition: transform .2s, box-shadow .2s;
+        box-shadow: 0 4px 20px rgba(232,93,47,.35);
+      }
+      .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,93,47,.45); color:#fff; }
+      .btn-outline-custom {
+        border: 2px solid var(--border);
+        color: var(--text); padding: 14px 30px;
+        border-radius: 999px; font-weight: 600;
+        text-decoration: none; font-size: 15px;
+        transition: border-color .2s, color .2s;
+      }
+      .btn-outline-custom:hover { border-color: var(--accent); color: var(--accent); }
+
+      .hero-photo-wrap {
+        background: var(--bg2);
+        position: relative; overflow: hidden;
+        display: flex; align-items: flex-end; justify-content: center;
+        border-left: 1px solid var(--border);
+      }
+      .hero-photo-wrap::before {
+        content: '';
+        position: absolute; bottom: 0; left: 0; right: 0;
+        height: 60%;
+        background: var(--grad);
+        opacity: .12;
+      }
+      .hero-photo-wrap img {
+        max-height: 90%;
+        max-width: 90%;
+        object-fit: cover;
+        position: relative; z-index: 1;
+        filter: drop-shadow(0 20px 40px rgba(0,0,0,.2));
+      }
+      .hero-scroll {
+        position: absolute; bottom: 36px; left: 80px;
+        display: flex; align-items: center; gap: 10px;
+        font-size: 12px; font-weight: 500; letter-spacing: .1em;
+        color: var(--muted); text-transform: uppercase;
+        animation: bounce 2s infinite;
+      }
+      @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(6px)} }
+      .hero-scroll::before { content: '↓'; font-size: 16px; }
+
+      /* ── SECTION HELPERS ──────────────────────────────────── */
+      section { padding: 100px 0; }
+      .section-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 11px; font-weight: 700; letter-spacing: .18em;
+        text-transform: uppercase; color: var(--accent);
+        margin-bottom: 12px;
+      }
+      .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(2rem, 3.5vw, 3rem);
+        font-weight: 800; line-height: 1.1;
+        letter-spacing: -.02em; margin-bottom: 40px;
+      }
+
+      /* ── ABOUT ────────────────────────────────────────────── */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 64px; align-items: start;
+      }
+      .about-text p { color: var(--muted); margin-bottom: 18px; }
+      .info-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px;
+        box-shadow: var(--shadow);
+      }
+      .info-row {
+        display: flex; gap: 16px; align-items: flex-start;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .info-row:last-child { border-bottom: none; }
+      .info-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: color-mix(in srgb, var(--accent) 10%, transparent);
+        color: var(--accent);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; flex-shrink: 0;
+      }
+      .info-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+      .info-value { font-size: 14px; font-weight: 500; color: var(--text); margin-top: 2px; }
+
+      /* ── SKILLS ───────────────────────────────────────────── */
+      #skills { background: var(--bg2); }
+      .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px 80px;
+      }
+      .skill-item { margin-bottom: 8px; }
+      .skill-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 10px;
+      }
+      .skill-name { font-weight: 600; font-size: 14px; }
+      .skill-pct {
+        font-family: 'Syne', sans-serif;
+        font-size: 13px; font-weight: 700; color: var(--accent);
+      }
+      .skill-track {
+        height: 6px;
+        background: var(--border);
+        border-radius: 999px; overflow: hidden;
+      }
+      .skill-fill {
+        height: 100%;
+        background: var(--grad);
+        border-radius: 999px;
+        width: 0;
+        transition: width 1.2s cubic-bezier(.22,1,.36,1);
+      }
+
+      /* ── TECH TAGS ────────────────────────────────────────── */
+      .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+      .tag {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 8px 16px; border-radius: 999px;
+        font-size: 13px; font-weight: 500; color: var(--muted);
+        transition: border-color .2s, color .2s, background .2s;
+      }
+      .tag:hover { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+
+      /* ── GALLERY ──────────────────────────────────────────── */
+      .gallery-card {
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transition: transform .3s, box-shadow .3s;
+      }
+      .gallery-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,.15); }
+      .gallery-card img { width: 100%; height: auto; display: block; }
+      .gallery-card-body {
+        background: var(--surface);
+        padding: 20px 24px;
+      }
+      .gallery-tag {
+        font-size: 11px; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+      }
+      .gallery-card-body h4 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+
+      /* ── FOOTER ───────────────────────────────────────────── */
+      footer {
+        background: var(--text);
+        color: var(--bg);
+        padding: 64px 80px;
+        display: flex; flex-direction: column; align-items: center; gap: 32px;
+      }
+      footer .footer-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        font-weight: 800; letter-spacing: -.02em;
+      }
+      .social-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+      .social-link {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.15);
+        padding: 12px 22px; border-radius: 999px;
+        text-decoration: none; color: var(--bg);
+        font-weight: 500; font-size: 14px;
+        transition: background .2s, border-color .2s, transform .2s;
+      }
+      .social-link:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-2px); }
+      .social-link img { width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
+      footer .copy { font-size: 13px; color: rgba(255,255,255,.3); }
+
+      /* ── DIVIDER ──────────────────────────────────────────── */
+      .divider {
+        height: 1px; background: var(--border); margin: 0;
+      }
+
+      /* ── RESPONSIVE ───────────────────────────────────────── */
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr; min-height: auto; }
+        .hero-text { padding: 60px 24px 40px; }
+        .hero-photo-wrap { height: 50vw; border-left: none; border-top: 1px solid var(--border); }
+        .hero-scroll { left: 24px; }
+        .about-grid, .skills-grid { grid-template-columns: 1fr; gap: 40px; }
+        nav { padding: 16px 24px; }
+        footer { padding: 48px 24px; }
+        section { padding: 64px 0; }
+      }
+    </style>
   </head>
   <body>
-    <div class="header">
-      <h1 class="ikhsan-header">MY PERSONAL INFORMATION</h1>
-      <img src="img/profile_photo.png" alt="profile_photo" class="profile-img" />
-      <h1>Bariq Adyatma</h1>
-      <h4>Bangkit Academy Cohort</h4>
-    </div>
-    <div class="content container">
-      <div class="row">
-        <div class="col-md-6">
-          <h2><i class="fa-solid fa-fire"></i> My Story</h2>
-          <p>
-            Saya, Bariq Adyatma, adalah seorang peserta Bangkit Academy 2024 yang mengambil track Cloud Computing. Perjalanan saya dimulai dengan mempelajari dasar-dasar web development, termasuk HTML, CSS, dan JavaScript. Saya kemudian memperdalam kemampuan dalam JavaScript, terutama dalam hal membuat website yang dinamis dan interaktif.
 
-Selanjutnya, saya menjelajahi dunia Google Cloud Platform (GCP) melalui latihan di Qwiklabs. Saya mempelajari layanan-layanan penting seperti Compute Engine, Cloud Storage, dan Cloud Functions. Semua ini memberi saya pemahaman yang lebih mendalam tentang cara membangun solusi cloud yang efisien dan scalable.
-          </p>
-          <p>
-            Dengan semua keterampilan yang saya pelajari, saya berharap dapat menerapkannya untuk berkontribusi dalam industri teknologi di masa depan.
-          </p>
-        </div>
-        <div class="col-md-6">
-          <h2><i class="fa-solid fa-note"></i> Personal Information</h2>
-          <p><strong>Age:</strong> 21 years old</p>
-          <p><strong>Phone:</strong> +6281515940764</p>
-          <p><strong>Email:</strong> c284b4ky0813@bangkit.academy</p>
+    <!-- DARK TOGGLE -->
+    <button id="toggle-dark" aria-label="Toggle dark mode">
+      <span class="knob"></span>
+    </button>
+
+    <!-- NAVBAR -->
+    <nav>
+      <span class="brand">BA.</span>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#docs">Docs</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <!-- ── HERO ─────────────────────────────────────────────── -->
+    <section class="hero" style="padding:0">
+      <div class="hero-text">
+        <div class="hero-badge reveal" style="transition-delay:.1s">Bangkit Academy 2024</div>
+        <h1 class="reveal" style="transition-delay:.2s">
+          Hi, I'm<br>
+          <span class="accent-name">Bariq</span><br>
+          Adyatma.
+        </h1>
+        <p class="subtitle reveal" style="transition-delay:.3s">
+          Cloud Computing enthusiast building scalable solutions on Google Cloud Platform.
+        </p>
+        <div class="hero-cta reveal" style="transition-delay:.4s">
+          <a href="#about" class="btn-primary-custom">Explore My Story</a>
+          <a href="#contact" class="btn-outline-custom">Get In Touch</a>
         </div>
       </div>
-    </div>
-    <h2 class="mt-5">Documentation Bangkit Academy</h2>
-      <div class="row portfolio">
-        <div class="col-sm-5 col-md-8">
-          <img src="img/ILT-CC-02-AO.png" alt="gambar 1" />
+      <div class="hero-photo-wrap">
+        <img src="img/profile_photo.png" alt="Bariq Adyatma" />
+      </div>
+      <span class="hero-scroll">Scroll down</span>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── ABOUT ─────────────────────────────────────────────── -->
+    <section id="about">
+      <div class="container">
+        <div class="section-label reveal">About Me</div>
+        <div class="about-grid">
+          <div class="about-text">
+            <h2 class="section-title reveal">My Story &amp;<br>Journey</h2>
+            <p class="reveal" style="transition-delay:.1s">
+              Saya, <strong>Bariq Adyatma</strong>, adalah peserta Bangkit Academy 2024 track
+              <strong>Cloud Computing</strong>. Perjalanan saya dimulai dengan mempelajari dasar
+              web development — HTML, CSS, dan JavaScript — hingga membuat website yang
+              dinamis dan interaktif.
+            </p>
+            <p class="reveal" style="transition-delay:.2s">
+              Saya kemudian menjelajahi dunia <strong>Google Cloud Platform (GCP)</strong>
+              melalui latihan di Qwiklabs: Compute Engine, Cloud Storage, dan Cloud Functions,
+              memberi saya pemahaman mendalam tentang membangun solusi cloud yang efisien dan
+              scalable.
+            </p>
+            <p class="reveal" style="transition-delay:.3s">
+              Dengan semua keterampilan ini, saya berharap dapat berkontribusi nyata dalam
+              industri teknologi di masa depan.
+            </p>
+            <div class="tags stagger">
+              <span class="tag">☁️ GCP</span>
+              <span class="tag">🌐 Web Dev</span>
+              <span class="tag">⚡ JavaScript</span>
+              <span class="tag">🐍 Python</span>
+              <span class="tag">🔧 Cloud Functions</span>
+              <span class="tag">📦 Cloud Storage</span>
+              <span class="tag">🖥️ Compute Engine</span>
+              <span class="tag">🔗 Qwiklabs</span>
+            </div>
+          </div>
+          <div class="info-card reveal-right">
+            <div class="info-row">
+              <div class="info-icon">🎂</div>
+              <div>
+                <div class="info-label">Age</div>
+                <div class="info-value">21 years old</div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">📱</div>
+              <div>
+                <div class="info-label">Phone</div>
+                <div class="info-value">+62 815-1594-0764</div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">✉️</div>
+              <div>
+                <div class="info-label">Email</div>
+                <div class="info-value">bariqadyatma@gmail.com</div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">🏫</div>
+              <div>
+                <div class="info-label">Program</div>
+                <div class="info-value">Bangkit Academy 2024 — Cloud Computing</div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">📍</div>
+              <div>
+                <div class="info-label">Location</div>
+                <div class="info-value">Indonesia</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="footer">
-      <h2>FIND ME!</h2>
-      <a href="https://github.com/bariqadyatam" target="_blank"
-        ><img src="img/git.png" alt="GitHub" /> Bariq Adyatma</a
-      >
-      <a href="https://www.linkedin.com/in/bariq-adyatma-651777283/" target="_blank"
-        ><img src="img/in.png" alt="linkedin" /> Bariq Adyatma</a
-      >
-      <a href="https://www.instagram.com/sas_765/" target="_blank"
-        ><img src="img/img_Instagram_icon.png" alt="img_Instagram_icon" /> sas_765</a
-      >
-    </div>
-    <script src="js/all.min.js"></script>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── SKILLS ─────────────────────────────────────────────── -->
+    <section id="skills">
+      <div class="container">
+        <div class="section-label reveal">Technical Skills</div>
+        <h2 class="section-title reveal">What I Can Do</h2>
+        <div class="skills-grid">
+
+          <div>
+            <div class="skill-item reveal" style="transition-delay:.05s">
+              <div class="skill-header">
+                <span class="skill-name">HTML &amp; CSS</span>
+                <span class="skill-pct">90%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
+            </div>
+            <div class="skill-item reveal" style="transition-delay:.1s">
+              <div class="skill-header">
+                <span class="skill-name">JavaScript</span>
+                <span class="skill-pct">75%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item reveal" style="transition-delay:.15s">
+              <div class="skill-header">
+                <span class="skill-name">Python</span>
+                <span class="skill-pct">65%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="65"></div></div>
+            </div>
+            <div class="skill-item reveal" style="transition-delay:.2s">
+              <div class="skill-header">
+                <span class="skill-name">REST API</span>
+                <span class="skill-pct">70%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="70"></div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="skill-item reveal" style="transition-delay:.05s">
+              <div class="skill-header">
+                <span class="skill-name">Google Cloud Platform</span>
+                <span class="skill-pct">80%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="80"></div></div>
+            </div>
+            <div class="skill-item reveal" style="transition-delay:.1s">
+              <div class="skill-header">
+                <span class="skill-name">Cloud Storage &amp; Compute Engine</span>
+                <span class="skill-pct">75%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item reveal" style="transition-delay:.15s">
+              <div class="skill-header">
+                <span class="skill-name">Cloud Functions &amp; Serverless</span>
+                <span class="skill-pct">68%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="68"></div></div>
+            </div>
+            <div class="skill-item reveal" style="transition-delay:.2s">
+              <div class="skill-header">
+                <span class="skill-name">Git &amp; Version Control</span>
+                <span class="skill-pct">72%</span>
+              </div>
+              <div class="skill-track"><div class="skill-fill" data-width="72"></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── DOCS ───────────────────────────────────────────────── -->
+    <section id="docs">
+      <div class="container">
+        <div class="section-label reveal">Portfolio</div>
+        <h2 class="section-title reveal">Bangkit Documentation</h2>
+        <div class="row g-4">
+          <div class="col-md-8 reveal">
+            <div class="gallery-card">
+              <img src="img/ILT-CC-02-AO.png" alt="ILT CC 02 AO Documentation" />
+              <div class="gallery-card-body">
+                <div class="gallery-tag">Bangkit Academy 2024</div>
+                <h4>ILT Cloud Computing — Session 02</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 reveal" style="transition-delay:.15s">
+            <div class="info-card h-100 d-flex flex-column justify-content-center">
+              <div style="font-size:40px;margin-bottom:16px">🏆</div>
+              <h4 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:10px">Bangkit Academy 2024</h4>
+              <p style="color:var(--muted);font-size:14px;margin-bottom:16px">
+                A Google-led education initiative with Tokopedia, Gojek, and Traveloka delivering
+                world-class tech training to Indonesian students.
+              </p>
+              <span class="tag" style="width:fit-content">Cloud Computing Track</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER / CONTACT ───────────────────────────────────── -->
+    <footer id="contact">
+      <p class="footer-title reveal">Find Me Online.</p>
+      <div class="social-links reveal" style="transition-delay:.1s">
+        <a href="https://github.com/bariqadyatam" target="_blank" class="social-link">
+          <img src="img/git.png" alt="GitHub" /> bariqadyatam
+        </a>
+        <a href="https://www.linkedin.com/in/bariq-adyatma-651777283/" target="_blank" class="social-link">
+          <img src="img/in.png" alt="LinkedIn" /> Bariq Adyatma
+        </a>
+        <a href="https://www.instagram.com/sas_765/" target="_blank" class="social-link">
+          <img src="img/img_Instagram_icon.png" alt="Instagram" /> sas_765
+        </a>
+      </div>
+      <p class="copy reveal" style="transition-delay:.2s">© 2024 Bariq Adyatma. All rights reserved.</p>
+    </footer>
+
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/jquery.min.js"></script>
+
+    <script>
+      /* ── DARK MODE ── */
+      const root = document.documentElement;
+      const btn  = document.getElementById('toggle-dark');
+      const saved = localStorage.getItem('theme') || 'light';
+      root.setAttribute('data-theme', saved);
+      btn.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+
+      /* ── SCROLL REVEAL ── */
+      const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+      const staggerParents = document.querySelectorAll('.stagger');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+
+      revealEls.forEach(el => observer.observe(el));
+
+      const staggerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            [...e.target.children].forEach((child, i) => {
+              setTimeout(() => child.classList.add('visible'), i * 80);
+            });
+            staggerObserver.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      staggerParents.forEach(el => staggerObserver.observe(el));
+
+      /* ── SKILL BARS ── */
+      const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.querySelectorAll('.skill-fill').forEach(bar => {
+              bar.style.width = bar.dataset.width + '%';
+            });
+            skillObserver.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      document.querySelectorAll('#skills .skills-grid > div').forEach(col => skillObserver.observe(col));
+
+      /* ── HERO instant reveal ── */
+      document.querySelectorAll('.hero .reveal').forEach(el => {
+        setTimeout(() => el.classList.add('visible'), 100);
+      });
+    </script>
   </body>
 </html>
